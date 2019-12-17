@@ -32,3 +32,10 @@
 
 #/target
 #**/*.rs.bk
+
+
+
+
+# forget .lock file
+
+**/*.lock
