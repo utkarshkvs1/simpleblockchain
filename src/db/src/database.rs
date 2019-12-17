@@ -260,7 +260,6 @@ mod tests_rdb_connection{
     #[derive(Debug, Serialize, Deserialize)]
     struct Friend {
         name: String,
-
     }
     // struct for unit testing
     #[derive(Debug, Serialize, Deserialize)]
@@ -272,7 +271,13 @@ mod tests_rdb_connection{
 
     }
 
+    use serial_test_derive::serial;
+
+    // #[serial(db)] - Macro to specify a set 
+    //              for serial execution of 
+    //              a class of tests
     #[test]
+    #[serial(db)]
     fn test_put_in_db(){
         let ferris = Mascot {
             name: "Ferris".to_owned(),
@@ -289,7 +294,12 @@ mod tests_rdb_connection{
         let key = con_obj.put_in_db(&ferris).unwrap();
         assert_eq!(key,expected_key);
     }
+
+    // #[serial(db)] - Macro to specify a set 
+    //              for serial execution of 
+    //              a class of tests
     #[test]
+    #[serial(db)]
     fn test_get_from_db(){
         let ferris = Mascot {
             name: "Ferris".to_owned(),
