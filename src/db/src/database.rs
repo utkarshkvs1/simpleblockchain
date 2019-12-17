@@ -1,5 +1,4 @@
 
-
 // Module responsible for serializing and deserializing
 pub mod sbserde{
 
@@ -249,6 +248,69 @@ pub mod rdb_connection {
 }
 
 
+// To test rdb_connection module 
+// Note: this module uses function of sbserde
+//      to ensure that this works fine 
+//      first run unit test for sbserde
+#[cfg(test)]
+mod tests_rdb_connection{
+    use super::{sbserde,rdb_connection} ;
+    use serde::{Deserialize, Serialize};
+    // struct for unit testing
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Friend {
+        name: String,
+
+    }
+    // struct for unit testing
+    #[derive(Debug, Serialize, Deserialize)]
+    struct Mascot {
+        name: String,
+        species: String,
+        year_of_birth: u32,
+        f: Friend,
+
+    }
+
+    #[test]
+    fn test_put_in_db(){
+        let ferris = Mascot {
+            name: "Ferris".to_owned(),
+            species: "crab".to_owned(),
+            year_of_birth: 2015,
+            f: Friend{name: "youte".to_owned()},
+
+        };
+
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+
+        let expected_key = sbserde::sb_ser_hash256(&ferris);
+        let key = con_obj.put_in_db(&ferris).unwrap();
+        assert_eq!(key,expected_key);
+    }
+    #[test]
+    fn test_get_from_db(){
+        let ferris = Mascot {
+            name: "Ferris".to_owned(),
+            species: "crab".to_owned(),
+            year_of_birth: 2015,
+            f: Friend{name: "youtee".to_owned()},
+
+        };
+
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = con_obj.put_in_db(&ferris).unwrap();
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Mascot = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris));
+
+    }
+
+} 
 
 
 
