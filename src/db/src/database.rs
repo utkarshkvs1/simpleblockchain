@@ -156,8 +156,15 @@ pub mod rdb_connection {
             // Todo :: handle if not able to connect 
             // Take input name of DB(but review the 
             //security pov with that functionality )
-            self.con_obj = DB::Db(rocksdb::DB::open_default("rockdb/db").unwrap());
+            // self.con_obj = DB::Db(rocksdb::DB::open_default("rockdb/db").unwrap());
             self.connected = true;
+            let path = "rockdb/newdb";
+            self.con_obj = DB::Db(rocksdb::DB::open_default(path).unwrap());
+            
+
+
+
+
     
         }
 
@@ -314,6 +321,97 @@ mod tests_rdb_connection{
         let key = con_obj.put_in_db(&ferris).unwrap();
         let ser_value:Vec<u8> = con_obj.getu8(&key);
         let test_object: Mascot = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris));
+
+    }
+
+
+    #[test]
+    fn test_parallel_write_1(){
+        let ferris1 = Friend{name: "1".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = con_obj.put_in_db(&ferris1).unwrap();
+
+
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris1));
+
+    }
+
+    #[test]
+    fn test_parallel_write_2(){
+        let ferris1 = Friend{name: "2".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = con_obj.put_in_db(&ferris1).unwrap();
+
+
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris1));
+
+    }
+
+    #[test]
+    fn test_parallel_write_3(){
+        let ferris1 = Friend{name: "3".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = con_obj.put_in_db(&ferris1).unwrap();
+
+
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris1));
+
+    }
+
+
+    #[test]
+    fn test_parallel_read_1(){
+        let ferris = Friend{name: "1".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = sbserde::sb_ser_hash256(&ferris);
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris));
+
+    }
+    #[test]
+    fn test_parallel_read_2(){
+        let ferris = Friend{name: "2".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = sbserde::sb_ser_hash256(&ferris);
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
+
+        assert_eq!(sbserde::sb_ser_hash256(&test_object),
+                    sbserde::sb_ser_hash256(&ferris));
+
+    }
+
+    #[test]
+    fn test_parallel_read_3(){
+        let ferris = Friend{name: "3".to_owned()};
+        let mut con_obj = rdb_connection::Con::new();
+        con_obj.connect();
+        let key = sbserde::sb_ser_hash256(&ferris);
+        let ser_value:Vec<u8> = con_obj.getu8(&key);
+        let test_object: Friend = sbserde::sb_deser(&ser_value);
 
         assert_eq!(sbserde::sb_ser_hash256(&test_object),
                     sbserde::sb_ser_hash256(&ferris));
